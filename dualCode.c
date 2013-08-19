@@ -1,6 +1,6 @@
 #include "stdio.h"
 #include "string.h"
-#include <stdlib.h>
+#include "stdlib.h"
 
 struct NODE		
 {
@@ -9,8 +9,11 @@ struct NODE
 };
 typedef struct NODE node;
 
-node *hash[' '] = {};
+int largestlen, secondLargestlen;	//variable to store the length of the largest string, to avoid calling strlen again and again
+char *largest;		//variable storing the largest name
+node *hash[' '] = {}; //an array for providing open hashing, i.e. a[length] = ptr to ROOT of the Binary Search Tree containing all the names having same length
 
+largestlen = secondLargestlen = 0;
 
 //Function to accept input
 char *getLine(void) {
@@ -42,6 +45,18 @@ char *getLine(void) {
 	return buffer; 
 }
 
+
+
+void inorder(node *t, int count)
+{
+    if(t!=NULL and count > 0)
+    {
+        inorder(t->lchild, count);
+        printf("%s\n",t->name);
+        count--;
+        inorder(t->rchild, count);
+    }
+}
 /*node *smallest(node *first,node *second){
 	char *name1 = first->name;
 	char *name2 = second->name;
@@ -67,12 +82,41 @@ char *getLine(void) {
 }
 */
 
-int BSTinsert(char *name)
+int BSTinsert(node *q, node *NewNode){
+	int st;
+	node *p;
+	while(q!=NULL)
+    {
+        if(strcmp(NewNode->name, q->name) < 0)
+        {
+            p=q;
+            q=q->lchild;
+            st=1;
+        }
+        else if(strcmp(NewNode->name, q->name) > 0)
+        {
+            p=q;
+            q=q->rchild;
+            st=2;
+        }
+        else
+        {
+            printf("DUPLICATE VALUE");
+            return 0;
+        }
+    }
+    if(st==1)
+    	p->lchild = NewNode;
+    else if(st==2)
+    	p->rchild = NewNode;
+    return 0;
+}
+
+int store(char *name)
 {
     int st=0, len;
-    node *NewNode,*p,*q;
+    node *NewNode;
     
-    len = strlen(name);
     NewNode = (node *)malloc(sizeof(node));
     
     if (NewNode == NULL)
@@ -81,37 +125,24 @@ int BSTinsert(char *name)
 	else{
 	    NewNode->name = name;
 	    NewNode->lchild = NewNode->rchild = NULL;
+
+	    // The Block of code responsible for keeping track of the Largest and the second Largest names;
+	    len = strlen(name);
+	    if (largestlen < len){
+	    	
+	    	secondLargestlen = largestlen;
+	    	largest = name;
+	    	largestlen = len;
+    	}
 	    
-	    if(hash[len] == NULL){	        
+	    // If a name of particular length has been seen for the first time 
+	    //			then make it the root
+	    // Else 
+	    //			call the BSTinsert(Root from hash table, NewNode)
+	    if(hash[len] == NULL)        
 	        hash[len] = NewNode;
-	    }
-	    else{
-		    q=hash[len];
-		    while(q!=NULL)
-		    {
-		        if(strcmp(name, q->name) < 0)
-		        {
-		            p=q;
-		            q=q->lchild;
-		            st=1;
-		        }
-		        else if(strcmp(name, q->name) > 0)
-		        {
-		            p=q;
-		            q=q->rchild;
-		            st=2;
-		        }
-		        else
-		        {
-		            printf("DUPLICATE VALUE");
-		            return 0;
-		        }
-		    }
-		    if(st==1)
-		    	p->lchild = NewNode;
-		    else if(st==2)
-		    	p->rchild = NewNode;
-		}    
+	    else	
+		    BSTinsert(hash[len], NewNode);   
 	}    
     return 0;
 }
@@ -129,7 +160,8 @@ int main(int argc, char const *argv[])
 	
 	for (i = 0; i < n; ++i)
 	{
-		BSTinsert(getLine());	
+		store(getLine());	
 	}
+
 	return 0;
 }
