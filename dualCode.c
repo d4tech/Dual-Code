@@ -9,11 +9,16 @@ struct NODE
 };
 typedef struct NODE node;
 
-int largestlen, secondLargestlen;	//variable to store the length of the largest string, to avoid calling strlen again and again
+node evenSTACK[10],oddSTACK[10];
+long int evenTOP = 0;
+long int oddTOP = 0;
+
+
+int largestlen =0;
+int secondLargestlen = 0;	//variable to store the length of the largest string, to avoid calling strlen again and again
 char *largest;		//variable storing the largest name
 node *hash[' '] = {}; //an array for providing open hashing, i.e. a[length] = ptr to ROOT of the Binary Search Tree containing all the names having same length
 
-largestlen = secondLargestlen = 0;
 
 //Function to accept input
 char *getLine(void) {
@@ -45,42 +50,29 @@ char *getLine(void) {
 	return buffer; 
 }
 
+void saferFree(void **pp) {
+	if (pp != NULL && *pp != NULL) {
+		free(*pp);
+		*pp = NULL; 
+	}
+}
 
+void PUSH(node *NewNode){
+	
+}
 
 void inorder(node *t, int count)
 {
-    if(t!=NULL and count > 0)
+    if(t!=NULL && count != 0)
     {
-        inorder(t->lchild, count);
+        if (t->lchild != NULL)
+        	inorder(t->lchild, count);	
+        
         printf("%s\n",t->name);
         count--;
         inorder(t->rchild, count);
     }
 }
-/*node *smallest(node *first,node *second){
-	char *name1 = first->name;
-	char *name2 = second->name;
-	int i,temp;
-	if (strlen(name1)==strlen(name2))
-	{
-		for (i = 0; i < strlen(name1); i++)
-		{
-			temp = strcmp(*(name1 + i),*(name2 + i));
-			if (temp < 0)
-			{
-				return first;
-			}
-			if (temp > 0)
-			{
-				return second;
-			}
-		}
-	}
-	
-	return NULL;
-
-}
-*/
 
 int BSTinsert(node *q, node *NewNode){
 	int st;
@@ -112,8 +104,7 @@ int BSTinsert(node *q, node *NewNode){
     return 0;
 }
 
-int store(char *name)
-{
+int store(char *name){
     int st=0, len;
     node *NewNode;
     
@@ -157,11 +148,12 @@ int main(int argc, char const *argv[])
 	
 	printf("\nEnter The no of inputs : ");
 	scanf("%d",&n);
-	
+	t = getchar();
 	for (i = 0; i < n; ++i)
-	{
 		store(getLine());	
-	}
+
+	inorder(hash[3], 3);
+	
 
 	return 0;
 }
