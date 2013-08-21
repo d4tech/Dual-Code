@@ -1,17 +1,21 @@
 #include "stdio.h"
 #include "string.h"
 #include "stdlib.h"
+#include "math.h"
+
+// enum bool 
 
 struct NODE		
 {
 	char *name;
-	struct NODE *rchild , *lchild;
+	struct NODE *parent, *rchild , *lchild;
 };
 typedef struct NODE node;
 
-node evenSTACK[10],oddSTACK[10];
+node evenSTACK[' '],oddSTACK[' '], unused[' '];
 long int evenTOP = 0;
 long int oddTOP = 0;
+long int unusedTOP = 0;
 
 
 int largestlen =0;
@@ -50,6 +54,8 @@ char *getLine(void) {
 	return buffer; 
 }
 
+
+
 void saferFree(void **pp) {
 	if (pp != NULL && *pp != NULL) {
 		free(*pp);
@@ -57,21 +63,39 @@ void saferFree(void **pp) {
 	}
 }
 
-void PUSH(node *NewNode){
-	
+void PUSH(node *NewNode,node *STACK, long int *TOP){
+	TOP++;
+	STACK[TOP] = NewNode;
 }
 
-void inorder(node *t, int count)
+void inorder(node *t, int count, node *STACK, long int *TOP)
 {
-    if(t!=NULL && count != 0)
+    if(t!=NULL)
     {
         if (t->lchild != NULL)
         	inorder(t->lchild, count);	
         
-        printf("%s\n",t->name);
+        if (count > 0)
+        	PUSH(t, STACK, TOP);
+        
+        PUSH(t, unused, unusedTOP);
+        // printf("%s\n",t->name);
         count--;
+        
         inorder(t->rchild, count);
     }
+}
+
+void createHeap(int start, node *STACK, long int TOP){
+	int i, level;
+	level = 1;
+	for (i=start; i > 1; i-=2)
+	{
+		if (hash[i] != NULL)
+			inorder(hash[i],pow(2,level),STACK, TOP);
+
+			
+	}
 }
 
 int BSTinsert(node *q, node *NewNode){
@@ -101,6 +125,8 @@ int BSTinsert(node *q, node *NewNode){
     	p->lchild = NewNode;
     else if(st==2)
     	p->rchild = NewNode;
+
+    NewNode->parent = p;
     return 0;
 }
 
@@ -118,7 +144,7 @@ int store(char *name){
 	    NewNode->lchild = NewNode->rchild = NULL;
 
 	    // The Block of code responsible for keeping track of the Largest and the second Largest names;
-	    len = strlen(name);
+	    len = strlen(name); 
 	    if (largestlen < len){
 	    	
 	    	secondLargestlen = largestlen;
@@ -142,18 +168,23 @@ int store(char *name){
 
 int main(int argc, char const *argv[])
 {
-	int n,i;
+	long int n,i;
 	char t;
-	char *name;
 	
 	printf("\nEnter The no of inputs : ");
-	scanf("%d",&n);
-	t = getchar();
+	n = (int)getLine();
+	// t = getchar();
 	for (i = 0; i < n; ++i)
 		store(getLine());	
 
-	inorder(hash[3], 3);
-	
+	if (secondLargestlen%2 != 0)
+	{
+		if((hash[secondLargestlen]->lchild != NULL) || (hash[secondLargestlen]->rchild != NULL))
+		{
+			oddTOP++;
+			createHeap(secondLargestlen, oddSTACK, oddTOP ); 
+		}
+	}	
 
 	return 0;
 }
