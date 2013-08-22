@@ -12,7 +12,7 @@ struct NODE
 };
 typedef struct NODE node;
 
-/*node *evenSTACK, *oddSTACK, *unusedSTACK;
+node *evenSTACK, *oddSTACK, *unusedSTACK;
 /*long int evenTOP = 0;
 long int oddTOP = 0;
 long int unusedTOP = 0;*/
@@ -243,9 +243,9 @@ int main(int argc, char const *argv[])
 				Refer to Page no 265 of "Data Structures using C, 2nd edition" by "Yedidyah Langsman, Aaron M Tanenbuam".
 				P.S: I know u already know it...Just being polite here, no offence.
 			*/
-			node* unusedSTACK = (node*)malloc((((50/100)*oddCOUNT)+evenCOUNT)*sizeof(node));	//Unused Part is 50% of the toatal no odd inputs added to even inputs
+			unusedSTACK = realloc(unusedSTACK, ((((50/100)*oddCOUNT)+evenCOUNT)*sizeof(node)));	//Unused Part is 50% of the toatal no odd inputs added to even inputs
 			unusedTOP = unusedSTACK;	//initializing TOP
-			node* oddSTACK = (node*)malloc(sizeof(node) * oddCOUNT);
+			oddSTACK = realloc(oddSTACK,(sizeof(node) * oddCOUNT));
 			oddTOP = oddSTACK;
 			makeODDheap(1);
 			printf("\n\n***********ODD TREE***********\n\n");
