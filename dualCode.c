@@ -226,6 +226,7 @@ int main(int argc, char const *argv[])
 	printf("\nEnter The no of inputs : ");
 	scanf("%d",&n);
 	t=getchar(); //fflush does not works everywhere
+	store("Rio");
 	for (i = 0; i < n; i++)
 		store(getLine());	//Yeah.. Go to store() directly, getLine() is just for taking input in a safer manner
 	/*
